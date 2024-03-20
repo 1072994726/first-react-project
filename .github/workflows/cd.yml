@@ -52,19 +52,19 @@ jobs:
         run: |
           yarn build
           zip -r assets ./dist/**
-      # 基于当前commit进行版本发布(Create a release)，tag_name是v前缀加上package.json的version值
-      - name: Create GitHub Release
-        # 此步骤中，版本发布后会返回对应的url，以供下面上传制品的步骤中读取使用
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          # GITHUB_TOKEN是准备工作步骤三申请的Personal Access Token
-          GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
-        with:
-          tag_name: v${{steps.version.outputs.value}}
-          release_name: v${{steps.version.outputs.value}}
-          draft: false
-          prerelease: false
+      # # 基于当前commit进行版本发布(Create a release)，tag_name是v前缀加上package.json的version值
+      # - name: Create GitHub Release
+      #   # 此步骤中，版本发布后会返回对应的url，以供下面上传制品的步骤中读取使用
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     # GITHUB_TOKEN是准备工作步骤三申请的Personal Access Token
+      #     GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
+      #   with:
+      #     tag_name: v${{steps.version.outputs.value}}
+      #     release_name: v${{steps.version.outputs.value}}
+      #     draft: false
+      #     prerelease: false
       # 把assets.zip上传到仓库对应的发布版本Release上
       - name: Update Release Asset
         id: upload-release-asset
@@ -83,7 +83,7 @@ jobs:
           # 指定当前目录中要上传的内容
           SOURCE: "dist/"
           # 指定上传到部署机器的哪个目录下
-          TARGET: "/data/www"
+          TARGET: "/"
           # 上传前指令，此处用于清空TARGET下的文件
           ARGS: "-avzr --delete"
         with:
