@@ -88,4 +88,4 @@ jobs:
           server: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.PASS_WORD }}
-          server-dir: "/htdocs/"
+          server-dir: "/htdocs/first-react-project/"
