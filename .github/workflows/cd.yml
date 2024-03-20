@@ -88,5 +88,5 @@ jobs:
           server: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.PASS_WORD }}
-          local-dir: "./"
-          server-dir: "./"
+          local-dir: "./htdocs/"
+          server-dir: "./htdocs/"
