@@ -89,3 +89,4 @@ jobs:
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.PASS_WORD }}
           server-dir: "/htdocs/first-react-project/"
+          local-dir: "./dist/"
