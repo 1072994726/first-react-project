@@ -1,4 +1,4 @@
-name: CD
+name: first-react-project
 on:
   # 以主干的push事件作为触发条件
   push:
@@ -8,22 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 拉取代码
-      - name: Checkout repository
+      - name: Clone Repository
         uses: actions/checkout@v2
       # 下载Node
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-      # setup pnpm
+      # 下载pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         id: pnpm-install
         with:
           version: 8.15.3
           run_install: false
-      # install dependencies
-      - name: Install dependencies
+      # 安装依赖
+      - name: Install Dependencies
         run: |
           pnpm install
       # # 添加缓存，逻辑和CI Workflow里的一样
@@ -50,43 +50,38 @@ jobs:
       # 打包生成制品，且把制品压缩到assets.zip压缩包里
       - name: Building
         run: |
-          yarn build
+          pnpm run build
           zip -r assets ./dist/**
-      # # 基于当前commit进行版本发布(Create a release)，tag_name是v前缀加上package.json的version值
-      # - name: Create GitHub Release
-      #   # 此步骤中，版本发布后会返回对应的url，以供下面上传制品的步骤中读取使用
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     # GITHUB_TOKEN是准备工作步骤三申请的Personal Access Token
-      #     GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
-      #   with:
-      #     tag_name: v${{steps.version.outputs.value}}
-      #     release_name: v${{steps.version.outputs.value}}
-      #     draft: false
-      #     prerelease: false
-      # # 把assets.zip上传到仓库对应的发布版本Release上
-      # - name: Update Release Asset
-      #   id: upload-release-asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./assets.zip
-      #     asset_name: assets.zip
-      #     asset_content_type: application/zip
-      # 把制品上传到部署机器
+      # 基于当前commit进行版本发布(Create a release)，tag_name是v前缀加上package.json的version值
+      - name: Create GitHub Release
+        # 此步骤中，版本发布后会返回对应的url，以供下面上传制品的步骤中读取使用
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          # GITHUB_TOKEN是准备工作步骤三申请的Personal Access Token
+          GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
+        with:
+          tag_name: v${{steps.version.outputs.value}}
+          release_name: v${{steps.version.outputs.value}}
+          draft: false
+          prerelease: false
+      # 把assets.zip上传到仓库对应的发布版本Release上
+      - name: Update Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_ACCESS_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./assets.zip
+          asset_name: assets.zip
+          asset_content_type: application/zip
+      # 将dist目录文件上传到服务器first-react-project目录下
       - name: Upload to Deploy Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        env:
-          # 指定当前目录中要上传的内容
-          SOURCE: "dist/"
-          # 上传前指令，此处用于清空TARGET下的文件
-          ARGS: "-avzr --delete"
         with:
           server: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.PASS_WORD }}
-          server-dir: "/htdocs/first-react-project/"
+          server-dir: "./htdocs/first-react-project/"
           local-dir: "./dist/"
